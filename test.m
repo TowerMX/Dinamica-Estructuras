@@ -28,15 +28,15 @@ K=[2*k -k 0 0; -k 2*k -k 0; 0 -k 2*k -k; 0 0 -k k];
 %
 [phi,lamda]=eig(K,M);
 for i=1:4
-w_str(i)=sqrt(lamda(i,i)); % Angular Natural Frequencies [rad/s]
-f_str(i)=w_str(i)/2/pi; % Natural Frequencies [Hz]
+w_str(i)=sqrt(lamda(i,i)); %#ok<SAGROW> % Angular Natural Frequencies [rad/s]
+f_str(i)=w_str(i)/2/pi; %#ok<SAGROW> % Natural Frequencies [Hz]
 end
 %
 vnod=zeros(5,4); % Vibration modes
 %
 for i=1:4
     for j=2:5
-vmod(j,i)=phi(j-1,i)/max(abs(min(phi(:,i))),max(phi(:,i)));
+vmod(j,i)=phi(j-1,i)/max(abs(min(phi(:,i))),max(phi(:,i))); %#ok<SAGROW> 
     end
 end
 
@@ -60,13 +60,13 @@ Km=phi'*K*phi;
 % State Space Model
 %
 B0=[1 1 1 1]'; % Applied Load
-A=[zeros(4,4) eye(4,4);-inv(M)*K -inv(M)*C]; % System Matrix
-B=[zeros(4,1);inv(M)*B0]; % Input Matrix
+A=[zeros(4,4) eye(4,4);-M\K -M\C]; % System Matrix
+B=[zeros(4,1);M\B0]; % Input Matrix
 E=[1 0 0 0 0 0 0 0;
    0 1 0 0 0 0 0 0;
    0 0 1 0 0 0 0 0;
    0 0 0 1 0 0 0 0]; % Output Matrix
-D=[0]; % Avance Matrix
+D=[0]; %#ok<NBRAK2> % Avance Matrix
 sys = ss(A,B,E,D); % Stste Space Model
 %
 % Numerical Integration
