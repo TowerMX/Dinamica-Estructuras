@@ -23,7 +23,7 @@ L = heaviside(t-T1).*(2*A/(T2-T1)*(t-T1).*(1-heaviside(t-(T1+T2)/2))+(2*A-2*A/(T
 5. Un semiperiodo de senoidal de amplitud A que empieza en T1 y acaba en T2
 L = heaviside(t-T1).*(A*sin(pi/(T2-T1)*(t-T1))).*(1-heaviside(t-T2));
 
-6. Explosión normalizada de amplitud A que empieza en T1 y acaba en T2 (de 0 a 0.08s ?)
+6. Explosión normalizada de amplitud máxima A que empieza en T1 y acaba en T2 (de 0 a 0.08s ?)
 
 L = heaviside(t-T1).*(2*A/((T1+T2)/2-T1)*(t-T1).*(1-heaviside(t-(T1+(T1+T2)/2)/2))+(2*A-2*A/((T1+T2)/2-T1)*(t-T1)).*heaviside(t-(T1+(T1+T2)/2)/2)).*(1-heaviside(t-(T1+T2)/2)) ...
   + heaviside(t-(3*T1+T2)/4).*(2*0.4*A/((T1+3*T2)/4-(3*T1+T2)/4)*(t-(3*T1+T2)/4).*(1-heaviside(t-((3*T1+T2)/4+(T1+3*T2)/4)/2))+(2*0.4*A-2*0.4*A/((T1+3*T2)/4-(3*T1+T2)/4)*(t-(3*T1+T2)/4)).*heaviside(t-((3*T1+T2)/4+(T1+3*T2)/4)/2)).*(1-heaviside(t-(T1+3*T2)/4)) ...
@@ -38,15 +38,16 @@ anteriores se pueden obtener impulsos más complejos
 
 %}
 
+
+
 % Parámetros editables
 M = 0;
-A = 40;
-T1 = 1;
-T2 = 1.08;
+A = 7;
+T1 = 3;
+T2 = 5;
 
 % Ahora copia y pega un ejemplo de arriba, o haz uno propio
 L = ;
-
 
 
 end
