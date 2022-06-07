@@ -45,8 +45,7 @@ T1 = 1;
 T2 = 1.08;
 
 % Ahora copia y pega un ejemplo de arriba, o haz uno propio
-L = ;
-
-
+L = 1000*cos(4*pi*t);
 
 end
+
