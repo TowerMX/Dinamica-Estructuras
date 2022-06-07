@@ -1,33 +1,29 @@
-clear, clc, close all
+clear, clc%, close all
 
 % Input Parameters (EDITAR)
 %
 % Auxiliares
 H=16; % m
-I=1/12*0.3^4; % m^4
-E=3*10^10; % N/m^2
+I=1/12*0.3^4; % m4
+E=3*10^10; % N/m2
 h=H/4;
-heq=[0 h 2*h 3*h 4*h];
+heq=[0 h];
 %
-m=30000; % kg
-k=4*12*E*I/h^3; % N/m
+m=100; % kg
+wn = 2*pi*3; % rad/s
+k = m*wn^2;
+zeta = 0.01;
 %
 %
 % Estos son los que importan:
 %
 % Matriz de masas
 %
-M=[m 0 0 0; 0 m 0 0; 0 0 m 0; 0 0 0 m]; warning('Cambiar matriz de masas (línea 20)')
+M=m;
 %
 % Matriz de rigideces
 %
-K=[2*k -k 0 0; -k 2*k -k 0; 0 -k 2*k -k; 0 0 -k k]; warning('Cambiar matriz de rigideces (línea 24)')
-%
-% Amortiguamiento
-zeta = 0.01;
-%
-% Duración de la simulación
-ttol=50; % s
+K=k;
 %
 % Donde se aplica la carga (vector COLUMNA)
 % (en verdad es un triple porque no sé si significa eso)
@@ -62,20 +58,13 @@ vmod(j,i)=phi(j-1,i)/max(abs(min(phi(:,i))),max(phi(:,i))); %#ok<SAGROW>
     end
 end
 
-disp('Las frecuencias naturales en rad/s son:')
-disp(w_str)
-disp('Y en Hz:')
-disp(f_str)
 
-disp('Modos normalizados a la unidad')
-disp(' ')
+
 
 
 % Damping Matrix
 %
 %zeta=1/100; % Damping Ratio
-%alfa=2*zeta/(w_str(1)+w_str(4));
-%beta=2*zeta*w_str(1)*w_str(4)/(w_str(1)+w_str(4));
 alfa=2*zeta/(w_str(1)+w_str(end));
 beta=2*zeta*w_str(1)*w_str(end)/(w_str(1)+w_str(end));
 C=alfa*K+beta*M;
@@ -88,10 +77,10 @@ Km=phi'*K*phi;
 %
 % State Space Model
 %
-%warning('Hay que cambiar el space state model en las líneas 66-74')
 %B0=[1 1 1 1]'; % Applied Load
 A=[zeros(size(M)) eye(size(M));-M\K -M\C]; % System Matrix
-B=[zeros(length(M),1);-M\B0]; % Input Matrix
+B=[zeros(length(M),1); M\B0]; % Input Matrix
+% En los apuntes viene -M\B0
 
 % Según qué se quiera obtener:
 
@@ -112,7 +101,7 @@ sys = ss(A,B,E,D); % Stste Space Model
 % Numerical Integration
 %
 dt=0.001; % Time increment [sec]
-%ttol=50; % Overall time [sec]
+ttol=50; % Overall time [sec]
 t = 0:dt:ttol; % Time vector
 u=zeros(1,length(t)); % External Load Matriz
 %
@@ -140,7 +129,7 @@ end
 
 % Showing Vibration Modes
 %
-figure(1)
+figure(3)
 for i=1:length(phi)
 subplot(2,2,i)
 plot(vmod(:,i),heq) 
@@ -163,7 +152,7 @@ end
 
 % Response in Time Domain
 %
-figure(2)
+figure(4)
 %
 subplot(2,2,1)
 plot(t_sim,y_time(:,1),'-b')
@@ -181,50 +170,8 @@ switch quequieres
 end
 
 %
-subplot(2,2,2)
-plot(t_sim,y_time(:,2),'-b')
-title('Response of the Mass 2'); 
-xlabel('Time [s]')
-switch quequieres
-    case 0
-        ylabel('x(t) [m]')
-    case 1
-        ylabel('v(t) [m/s]')
-    otherwise
-        ylabel('a(t) [m/s^2]')
-end
-%
-subplot(2,2,3)
-plot(t_sim,y_time(:,3),'-b')
-title('Response of the Mass 3'); 
-xlabel('Time [s]')
-switch quequieres
-    case 0
-        ylabel('x(t) [m]')
-    case 1
-        ylabel('v(t) [m/s]')
-    otherwise
-        ylabel('a(t) [m/s^2]')
-end
-%
-subplot(2,2,4)
-plot(t_sim,y_time(:,4),'-b')
-title('Response of the Mass 4'); 
-xlabel('Time [s]')
-switch quequieres
-    case 0
-        ylabel('x(t) [m]')
-    case 1
-        ylabel('v(t) [m/s]')
-    otherwise
-        ylabel('a(t) [m/s^2]')
-end
-%
 % Display Results
 texto = {'displacement'; 'velocity'; 'acceleration'};
 unidades = {'m'; 'm/s'; 'm/s^2'};
 %
 disp(['The maximum ' texto{quequieres+1} ' of the 1st mass is ', sprintf('%4.3f',max(y_time(:,1))),' ' unidades{quequieres+1}])
-disp(['The maximum ' texto{quequieres+1} ' of the 2nd mass is ', sprintf('%4.3f',max(y_time(:,2))),' ' unidades{quequieres+1}])
-disp(['The maximum ' texto{quequieres+1} ' of the 3rd mass is ', sprintf('%4.3f',max(y_time(:,3))),' ' unidades{quequieres+1}])
-disp(['The maximum ' texto{quequieres+1} ' of the 4th mass is ', sprintf('%4.3f',max(y_time(:,4))),' ' unidades{quequieres+1}])
